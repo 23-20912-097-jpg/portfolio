@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mehmoona Abid — CS Student & Developer</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0a0a08;
+      --bg-2: #111110;
+      --cream: #f0ebe0;
+      --muted: #6b6860;
+      --accent: #c8f060;
+      --accent-warm: #f0a050;
+      --border: rgba(240, 235, 224, 0.08);
+      --font-display: 'Fraunces', serif;
+      --font-sans: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom cursor ── */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.25s, height 0.25s, background 0.25s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(200, 240, 96, 0.4);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+    }
+    body:has(a:hover) #cursor, body:has(button:hover) #cursor { width: 22px; height: 22px; }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none; z-index: 9997;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 24px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100;
+      mix-blend-mode: normal;
+    }
+    nav::after {
+      content: '';
+      position: absolute; bottom: 0; left: 48px; right: 48px;
+      height: 1px;
+      background: var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── Sections ── */
+    section { padding: 120px 48px; }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      opacity: 0;
+    }
+
+    .hero-name {
+      font-family: var(--font-display);
+      font-size: clamp(72px, 10vw, 148px);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      overflow: hidden;
+    }
+    .hero-name .line { display: block; overflow: hidden; }
+    .hero-name .line span { display: block; transform: translateY(110%); }
+    .hero-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      margin-top: 40px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 40px;
+    }
+    .hero-desc {
+      max-width: 380px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--muted);
+      opacity: 0;
+    }
+    .hero-scroll {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+    .scroll-line {
+      width: 60px; height: 1px;
+      background: var(--muted);
+      position: relative; overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--accent);
+      animation: scanline 2s ease-in-out infinite 2s;
+    }
+    @keyframes scanline {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    /* floating tag */
+    .hero-tag {
+      position: absolute; top: 160px; right: 48px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+      letter-spacing: 0.15em;
+      opacity: 0;
+    }
+
+    /* year marker */
+    .hero-year {
+      position: absolute; top: 50%; right: 48px;
+      transform: translateY(-50%);
+      font-family: var(--font-display);
+      font-size: clamp(160px, 22vw, 300px);
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(240, 235, 224, 0.04);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -0.05em;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 48px;
+    }
+
+    /* ── About ── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-number {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(240,235,224,0.2);
+      letter-spacing: 0.1em;
+    }
+    .about-left { padding-top: 8px; }
+    .about-heading {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .about-heading em { font-style: italic; color: var(--accent-warm); }
+    .about-body { margin-top: 32px; }
+    .about-body p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(240,235,224,0.7);
+      margin-bottom: 20px;
+    }
+    .about-body p strong { color: var(--cream); font-weight: 600; }
+
+    .skills-grid {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .skill-chip {
+      background: rgba(240,235,224,0.04);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+    }
+    .skill-chip:hover {
+      background: rgba(200,240,96,0.07);
+      border-color: rgba(200,240,96,0.3);
+      color: var(--accent);
+    }
+
+    /* ── Projects ── */
+    #projects { padding-top: 80px; }
+    .projects-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 60px;
+    }
+    .projects-heading {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 68px);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .projects-heading em { font-style: italic; color: var(--accent); }
+    .projects-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      padding-bottom: 6px;
+    }
+
+    .project-list { display: flex; flex-direction: column; gap: 0; }
+    .project-item {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: center;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: padding-left 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-item::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(200,240,96,0.04) 0%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .project-item:hover { padding-left: 16px; }
+    .project-item:hover::before { transform: translateX(0); }
+
+    .project-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(240,235,224,0.2);
+      letter-spacing: 0.1em;
+    }
+    .project-info { display: flex; flex-direction: column; gap: 6px; }
+    .project-name {
+      font-family: var(--font-sans);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: -0.01em;
+    }
+    .project-desc {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      max-width: 520px;
+    }
+    .project-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid rgba(200,240,96,0.25);
+      padding: 5px 10px;
+    }
+
+    /* ── GitHub Repos ── */
+    #repos { padding-top: 80px; }
+    .repos-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 60px;
+    }
+    .repos-heading {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 68px);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .repos-heading em { font-style: italic; color: var(--accent-warm); }
+
+    .repos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2px;
+    }
+    .repo-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 28px 28px 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex; flex-direction: column; gap: 14px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .repo-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 0;
+      background: var(--accent);
+      transition: width 0.4s ease;
+    }
+    .repo-card:hover {
+      border-color: rgba(200,240,96,0.2);
+      transform: translateY(-3px);
+    }
+    .repo-card:hover::after { width: 100%; }
+
+    .repo-icon {
+      font-size: 18px;
+      opacity: 0.6;
+      align-self: flex-start;
+    }
+    .repo-name {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cream);
+      letter-spacing: -0.01em;
+    }
+    .repo-desc {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--muted);
+      flex: 1;
+    }
+    .repo-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 8px;
+    }
+    .repo-lang {
+      display: flex; align-items: center; gap: 7px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .lang-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+    }
+    .repo-arrow {
+      font-size: 16px;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      transform: translateX(-6px);
+    }
+    .repo-card:hover .repo-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ── Contact ── */
+    #contact {
+      min-height: 70vh;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-big {
+      font-family: var(--font-display);
+      font-size: clamp(52px, 8vw, 120px);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .contact-big em { font-style: italic; color: var(--accent); }
+    .contact-links {
+      margin-top: 52px;
+      display: flex; gap: 32px; flex-wrap: wrap;
+    }
+    .contact-link {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 10px;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .contact-link::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .contact-link:hover { color: var(--cream); }
+    .contact-link:hover::after { transform: scaleX(1); }
+
+    .contact-bg-text {
+      position: absolute; right: -20px; bottom: 40px;
+      font-family: var(--font-display);
+      font-size: clamp(100px, 18vw, 260px);
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(240,235,224,0.04);
+      line-height: 1;
+      pointer-events: none; user-select: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 48px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Reveal utility ── */
+    .reveal { opacity: 0; transform: translateY(40px); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      section { padding: 80px 24px; }
+      nav { padding: 20px 24px; }
+      nav::after { left: 24px; right: 24px; }
+      .divider { margin: 0 24px; }
+      #about { grid-template-columns: 1fr; gap: 40px; }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-year { display: none; }
+      .hero-tag { display: none; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+      .nav-links { gap: 20px; }
+      .project-item { grid-template-columns: 50px 1fr; }
+      .project-tag { display: none; }
+      .repos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Nav -->
+  <nav id="navbar">
+    <a class="nav-logo" href="#">AC_</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#repos">GitHub</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <div class="hero-year">2025</div>
+    <div class="hero-tag">Computer Science Student ↓</div>
+
+    <p class="hero-eyebrow">Available for internships &amp; collab</p>
+
+    <h1 class="hero-name">
+      <span class="line"><span>Mehmoona</span></span>
+      <span class="line"><span><em>Abid.</em></span></span>
+    </h1>
+
+    <div class="hero-sub">
+      <p class="hero-desc">
+        CS student at MIT · building things that live at the intersection of
+        systems, interfaces, and ideas worth caring about.
+      </p>
+      <div class="hero-scroll">
+        <div class="scroll-line"></div>
+        Scroll
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══ ABOUT ══ -->
+  <section id="about">
+    <div class="about-left reveal">
+      <p class="section-number">01 /</p>
+      <p class="section-label">About</p>
+      <h2 class="about-heading">Who I <em>am</em></h2>
+    </div>
+
+    <div class="about-body">
+      <p>
+        I'm a <strong>third-year Computer Science student</strong> at MIT, passionate about building
+        software that is both technically rigorous and genuinely useful. I love working across the stack —
+        from wrangling algorithms to crafting interfaces people actually enjoy.
+      </p>
+      <p>
+        When I'm not pushing commits, I'm reading papers, competing in CTF challenges, or over-engineering
+        my terminal setup. I believe good code is a form of communication — to machines <em>and</em> people.
+      </p>
+      <p>
+        Currently exploring opportunities in <strong>systems programming, ML infrastructure,</strong>
+        and <strong>full-stack development</strong>. Always open to interesting problems.
+      </p>
+
+      <div class="skills-grid">
+        <div class="skill-chip">Python</div>
+        <div class="skill-chip">TypeScript</div>
+        <div class="skill-chip">Rust</div>
+        <div class="skill-chip">C / C++</div>
+        <div class="skill-chip">React</div>
+        <div class="skill-chip">Node.js</div>
+        <div class="skill-chip">PostgreSQL</div>
+        <div class="skill-chip">Docker</div>
+        <div class="skill-chip">Linux</div>
+        <div class="skill-chip">PyTorch</div>
+        <div class="skill-chip">Git</div>
+        <div class="skill-chip">AWS</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══ PROJECTS ══ -->
+  <section id="projects">
+    <div class="projects-header reveal">
+      <h2 class="projects-heading">Selected<br /><em>Work</em></h2>
+      <span class="projects-count">04 PROJECTS</span>
+    </div>
+
+    <div class="project-list">
+      <a class="project-item" href="#" target="_blank">
+        <span class="project-num">01</span>
+        <div class="project-info">
+          <span class="project-name">NeuralDB</span>
+          <span class="project-desc">A vector database with approximate nearest-neighbor search, built from scratch in Rust with an HTTP API layer.</span>
+        </div>
+        <span class="project-tag">Rust · Systems</span>
+      </a>
+
+      <a class="project-item" href="#" target="_blank">
+        <span class="project-num">02</span>
+        <div class="project-info">
+          <span class="project-name">Phantom OS Shell</span>
+          <span class="project-desc">Unix-like shell supporting piping, redirection, job control, and a custom scripting language. Written in C.</span>
+        </div>
+        <span class="project-tag">C · OS</span>
+      </a>
+
+      <a class="project-item" href="#" target="_blank">
+        <span class="project-num">03</span>
+        <div class="project-info">
+          <span class="project-name">CampusLens</span>
+          <span class="project-desc">Real-time campus event discovery app with ML-powered interest matching. Built with React, FastAPI, and PostgreSQL.</span>
+        </div>
+        <span class="project-tag">Full-Stack</span>
+      </a>
+
+      <a class="project-item" href="#" target="_blank">
+        <span class="project-num">04</span>
+        <div class="project-info">
+          <span class="project-name">Argus</span>
+          <span class="project-desc">Lightweight distributed tracing library for Python microservices. Integrates with OpenTelemetry and Grafana.</span>
+        </div>
+        <span class="project-tag">Python · DevOps</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══ GITHUB REPOS ══ -->
+  <section id="repos">
+    <div class="repos-header reveal">
+      <h2 class="repos-heading">On<br /><em>GitHub</em></h2>
+      <span class="projects-count">6 REPOS</span>
+    </div>
+
+    <div class="repos-grid">
+
+      <a class="repo-card" href="https://github.com" target="_blank">
+        <span class="repo-icon">⬡</span>
+        <span class="repo-name">neuraldb</span>
+        <span class="repo-desc">From-scratch vector database with HNSW approximate nearest-neighbor indexing and a minimal HTTP API.</span>
+        <div class="repo-footer">
+          <span class="repo-lang"><span class="lang-dot" style="background:#dea584;"></span>Rust</span>
+          <span class="repo-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com" target="_blank">
+        <span class="repo-icon">⬡</span>
+        <span class="repo-name">phantom-shell</span>
+        <span class="repo-desc">Unix-like shell in C. Supports pipes, I/O redirection, background jobs, and a minimal scripting dialect.</span>
+        <div class="repo-footer">
+          <span class="repo-lang"><span class="lang-dot" style="background:#555555;"></span>C</span>
+          <span class="repo-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/23-20912-097-jpg/OOP-ONLINE-FOOD-ORDERING-SYSTEM" target="_blank">
+        <span class="repo-icon">⬡</span>
+        <span class="repo-name">OOP-ONLINE-FOOD-ORDERING-SYSTEM</span>
+        <span class="repo-desc">A full-featured online food ordering system built using Object-Oriented Programming principles. Covers cart management, order processing, and menu browsing.</span>
+        <div class="repo-footer">
+          <span class="repo-lang"><span class="lang-dot" style="background:#b07219;"></span>Java / OOP</span>
+          <span class="repo-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/23-20912-097-jpg/DLD-RAIN-AND-FIRE-SENSOR-ALRAM" target="_blank">
+        <span class="repo-icon">⬡</span>
+        <span class="repo-name">DLD-RAIN-AND-FIRE-SENSOR-ALARM</span>
+        <span class="repo-desc">A digital logic design project implementing rain and fire detection sensors with an automated alarm system. Built using combinational and sequential circuits.</span>
+        <div class="repo-footer">
+          <span class="repo-lang"><span class="lang-dot" style="background:#543db5;"></span>DLD / Hardware</span>
+          <span class="repo-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/23-20912-097-jpg/AI-STUDENT-INFORMATION-CHATBOT-SYSTEM" target="_blank">
+        <span class="repo-icon">⬡</span>
+        <span class="repo-name">AI-STUDENT-INFORMATION-CHATBOT</span>
+        <span class="repo-desc">An AI-powered chatbot designed to answer student queries about academic information, schedules, and campus resources using NLP techniques.</span>
+        <div class="repo-footer">
+          <span class="repo-lang"><span class="lang-dot" style="background:#3572A5;"></span>Python / AI</span>
+          <span class="repo-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/23-20912-097-jpg/COAL-GAS-DETECTION-SYSTEM" target="_blank">
+        <span class="repo-icon">⬡</span>
+        <span class="repo-name">COAL-GAS-DETECTION-SYSTEM</span>
+        <span class="repo-desc">An embedded system for real-time coal gas leak detection with threshold-based alerting. Designed for safety-critical industrial environments.</span>
+        <div class="repo-footer">
+          <span class="repo-lang"><span class="lang-dot" style="background:#e34c26;"></span>Assembly / Embedded</span>
+          <span class="repo-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══ CONTACT ══ -->
+  <section id="contact">
+    <div class="contact-bg-text">hi.</div>
+    <div class="reveal">
+      <p class="section-label">Let's connect</p>
+      <h2 class="contact-big">
+        Say<br /><em>hello.</em>
+      </h2>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:alex@example.com">
+          <span>✦</span> alex@example.com
+        </a>
+        <a class="contact-link" href="https://github.com" target="_blank">
+          <span>✦</span> GitHub
+        </a>
+        <a class="contact-link" href="https://linkedin.com" target="_blank">
+          <span>✦</span> LinkedIn
+        </a>
+        <a class="contact-link" href="#" target="_blank">
+          <span>✦</span> Resume PDF
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <span>© 2025 Alex Chen</span>
+    <span>CS @ MIT — Building good things.</span>
+    <span>Designed &amp; coded by AC_</span>
+  </footer>
+
+  <script>
+    // ── Cursor ──
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+    function animateCursor() {
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // ── GSAP ──
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+    // Hero — name lines stagger in
+    gsap.to('.hero-name .line span', {
+      y: 0,
+      duration: 1.1,
+      ease: 'power4.out',
+      stagger: 0.15,
+      delay: 0.2,
+    });
+
+    gsap.to('.hero-eyebrow', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+      delay: 0.1,
+    });
+
+    gsap.to('.hero-desc', {
+      opacity: 1,
+      y: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+      delay: 0.9,
+    });
+
+    gsap.to('.hero-scroll', {
+      opacity: 1,
+      duration: 0.9,
+      ease: 'power3.out',
+      delay: 1.2,
+    });
+
+    gsap.to('.hero-tag', {
+      opacity: 1,
+      duration: 1,
+      ease: 'power3.out',
+      delay: 1.4,
+    });
+
+    // Nav slide in
+    gsap.from('#navbar', {
+      y: -30,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+      delay: 0.05,
+    });
+
+    // Hero year parallax
+    gsap.to('.hero-year', {
+      y: -120,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      }
+    });
+
+    // Generic scroll reveals
+    gsap.utils.toArray('.reveal').forEach(el => {
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 82%',
+          toggleActions: 'play none none none',
+        }
+      });
+    });
+
+    // Project items stagger
+    gsap.from('.project-item', {
+      opacity: 0,
+      x: -30,
+      duration: 0.7,
+      ease: 'power3.out',
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: '.project-list',
+        start: 'top 80%',
+      }
+    });
+
+    // Repo cards stagger
+    gsap.from('.repo-card', {
+      opacity: 0,
+      y: 30,
+      duration: 0.6,
+      ease: 'power3.out',
+      stagger: 0.09,
+      scrollTrigger: {
+        trigger: '.repos-grid',
+        start: 'top 80%',
+      }
+    });
+
+    // Skills chips
+    gsap.from('.skill-chip', {
+      opacity: 0,
+      scale: 0.9,
+      duration: 0.4,
+      stagger: 0.04,
+      ease: 'back.out(1.4)',
+      scrollTrigger: {
+        trigger: '.skills-grid',
+        start: 'top 85%',
+      }
+    });
+
+    // Contact heading split
+    gsap.from('#contact .contact-big', {
+      opacity: 0,
+      y: 60,
+      duration: 1,
+      ease: 'power4.out',
+      scrollTrigger: {
+        trigger: '#contact',
+        start: 'top 75%',
+      }
+    });
+
+    gsap.from('.contact-link', {
+      opacity: 0,
+      x: -20,
+      duration: 0.6,
+      ease: 'power3.out',
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: '.contact-links',
+        start: 'top 85%',
+      }
+    });
+
+    // Contact bg text parallax
+    gsap.to('.contact-bg-text', {
+      x: 80,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#contact',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1.5,
+      }
+    });
+
+    // Dividers reveal
+    gsap.from('.divider', {
+      scaleX: 0,
+      transformOrigin: 'left center',
+      duration: 1.2,
+      ease: 'power3.out',
+      stagger: 0.2,
+      scrollTrigger: {
+        trigger: '.divider',
+        start: 'top 90%',
+      }
+    });
+
+    // Navbar background on scroll
+    const navbar = document.getElementById('navbar');
+    ScrollTrigger.create({
+      start: 80,
+      onUpdate: self => {
+        if (self.progress > 0) {
+          navbar.style.background = 'rgba(10,10,8,0.85)';
+          navbar.style.backdropFilter = 'blur(16px)';
+          navbar.style.webkitBackdropFilter = 'blur(16px)';
+        } else {
+          navbar.style.background = '';
+          navbar.style.backdropFilter = '';
+          navbar.style.webkitBackdropFilter = '';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
