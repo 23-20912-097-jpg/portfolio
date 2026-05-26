@@ -365,7 +365,7 @@
     }
 
     /* ── GitHub Repos ── */
-    #repos { padding-top: 80px; }
+    #repos { padding-top: 80px; background: #181815; }
     .repos-header {
       display: flex; justify-content: space-between; align-items: flex-end;
       margin-bottom: 60px;
@@ -382,11 +382,11 @@
     .repos-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 2px;
+      gap: 16px;
     }
     .repo-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
+      background: rgba(240,235,224,0.04);
+      border: 1px solid rgba(240,235,224,0.1);
       padding: 28px 28px 24px;
       text-decoration: none;
       color: inherit;
@@ -559,7 +559,7 @@
 
   <!-- ══ HERO ══ -->
   <section id="hero">
-    <div class="hero-year">2025</div>
+    <div class="hero-year">2026</div>
     <div class="hero-tag">Computer Science Student ↓</div>
 
     <p class="hero-eyebrow">Available for internships &amp; collab</p>
@@ -571,7 +571,7 @@
 
     <div class="hero-sub">
       <p class="hero-desc">
-        CS student at MIT · building things that live at the intersection of
+        CS student at FJWU · building things that live at the intersection of
         systems, interfaces, and ideas worth caring about.
       </p>
       <div class="hero-scroll">
@@ -593,7 +593,7 @@
 
     <div class="about-body">
       <p>
-        I'm a <strong>third-year Computer Science student</strong> at MIT, passionate about building
+        I'm a <strong>third-year Computer Science student</strong> at FJWU, passionate about building
         software that is both technically rigorous and genuinely useful. I love working across the stack —
         from wrangling algorithms to crafting interfaces people actually enjoy.
       </p>
@@ -628,8 +628,8 @@
   <!-- ══ PROJECTS ══ -->
   <section id="projects">
     <div class="projects-header reveal">
-      <h2 class="projects-heading">Selected<br /><em>Work</em></h2>
-      <span class="projects-count">04 PROJECTS</span>
+      <h2 class="projects-heading">Currently<br /><em>Exploring</em></h2>
+      <span class="projects-count">04 Topics</span>
     </div>
 
     <div class="project-list">
@@ -756,8 +756,8 @@
         Say<br /><em>hello.</em>
       </h2>
       <div class="contact-links">
-        <a class="contact-link" href="mailto:alex@example.com">
-          <span>✦</span> alex@example.com
+        <a class="contact-link" href="mailto:mona@example.com">
+          <span>✦</span> mona@example.com
         </a>
         <a class="contact-link" href="https://github.com" target="_blank">
           <span>✦</span> GitHub
@@ -774,9 +774,9 @@
 
   <!-- ══ FOOTER ══ -->
   <footer>
-    <span>© 2025 Alex Chen</span>
-    <span>CS @ MIT — Building good things.</span>
-    <span>Designed &amp; coded by AC_</span>
+    <span>© 2026 Mehmoona Abid</span>
+    <span>CS @ FJWU — Building good things.</span>
+    <span>Designed &amp; coded by Mona_</span>
   </footer>
 
   <script>
@@ -889,18 +889,26 @@
       }
     });
 
-    // Repo cards stagger
-    gsap.from('.repo-card', {
-      opacity: 0,
-      y: 30,
-      duration: 0.6,
-      ease: 'power3.out',
-      stagger: 0.09,
-      scrollTrigger: {
-        trigger: '.repos-grid',
-        start: 'top 80%',
+    // Repo cards stagger — use fromTo so cards are always visible even if ScrollTrigger misfires
+    gsap.fromTo('.repo-card',
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.09,
+        scrollTrigger: {
+          trigger: '.repos-grid',
+          start: 'top 90%',
+          toggleActions: 'play none none none',
+        }
       }
-    });
+    );
+    // Fallback: ensure cards are visible after 1.5s regardless
+    setTimeout(() => {
+      document.querySelectorAll('.repo-card').forEach(c => c.style.opacity = '1');
+    }, 1500);
 
     // Skills chips
     gsap.from('.skill-chip', {
